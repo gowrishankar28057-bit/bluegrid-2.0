@@ -13,7 +13,8 @@ export default function App() {
         <p className="mt-3 leading-relaxed text-slate-300">
           This starter confirms that React, TypeScript, Vite, and Tailwind CSS are
           configured. The core planning screens are scheduled for the next
-          development phase. The scientific backend and optimization service are planned.
+          development phase. The scientific backend is available as a separate
+          Flask API.
         </p>
         <p className="mt-5 text-sm leading-relaxed text-slate-400">
           See the project README for the architecture, folder responsibilities,

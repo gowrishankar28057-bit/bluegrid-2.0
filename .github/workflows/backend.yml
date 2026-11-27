@@ -1,0 +1,26 @@
+name: Backend verification
+on:
+  push:
+    paths: ["backend/**", "scripts/prepare_resources.py", ".github/workflows/backend.yml"]
+  pull_request:
+    paths: ["backend/**", "scripts/prepare_resources.py", ".github/workflows/backend.yml"]
+permissions:
+  contents: read
+jobs:
+  numerical-and-api-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: backend/requirements*.txt
+      - run: python -m pip install -r requirements-dev.txt
+      - run: python -m pytest -q

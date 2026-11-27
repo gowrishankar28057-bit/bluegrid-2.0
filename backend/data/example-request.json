@@ -1,0 +1,14 @@
+{
+  "scenario": {
+    "location_id": "lakshadweep",
+    "demand_kw": 100,
+    "capacities_kw": {
+      "floating_solar": 200,
+      "onshore_wind": 200,
+      "otec": 50
+    },
+    "battery_kwh": 600,
+    "max_lpsp": 0.05
+  },
+  "include_hourly": false
+}

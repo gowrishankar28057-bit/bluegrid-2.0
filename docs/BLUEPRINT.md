@@ -1,4 +1,4 @@
-# BlueGrid 2.0 — Engineering blueprint
+# BlueGrid 2.0 - Engineering blueprint
 
 ## System boundary
 
@@ -30,7 +30,7 @@ backend/app/routes/main.py
 backend/tests/
 ```
 
-The module separation follows the supplied technical project document. It is a blueprint, not a claim that these Python modules exist yet.
+The scientific engine modules, application factory, configuration, data loader, and route modules above are implemented. Request validation and a bounded run cache provide the HTTP integration boundary. Detailed formulas, assumptions, and departures from the reference notation are recorded in [MODELS.md](MODELS.md); service contracts are in [API.md](API.md).
 
 ## Frontend scope
 
@@ -38,7 +38,7 @@ The module separation follows the supplied technical project document. It is a b
 - Planning inputs: electricity demand, renewables, battery.
 - 3D Earth visualization and two pinned locations.
 - Preview of a synthetic 24-hour energy balance, **not** backend optimization.
-- Future integration point for `/api/evaluate`, `/api/optimize`, and reporting.
+- Implemented service endpoints `/api/evaluate`, `/api/optimize`, `/api/compare`, and cached JSON/CSV/PDF exports; frontend forms remain pending.
 
 ## Engineering guardrails
 

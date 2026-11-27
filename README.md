@@ -2,7 +2,7 @@
 
 A renewable energy planning platform for island and coastal systems, integrating land-based renewables, ocean energy, and battery storage.
 
-**Development stage:** project structure and frontend foundation. The planning screens and scientific backend are scheduled for subsequent implementation. Licensed under [MIT](LICENSE).
+**Development stage:** Flask scientific backend and React frontend foundation. The core planning screens are the next interface phase. Licensed under [MIT](LICENSE).
 
 ## Problem Statement
 
@@ -14,7 +14,7 @@ The engineering reference, *BlueGrid: Optimal Hybrid Renewable Energy Planner - 
 
 ## Architecture Blueprint
 
-The repository separates presentation, scientific computation, data preparation, and documentation. The frontend will collect inputs and display API responses; the future backend will own physical models, dispatch, economics, reliability checks, and optimization.
+The repository separates presentation, scientific computation, data preparation, and documentation. The Flask backend implements physical models, dispatch, economics, reliability checks, optimization, and exports. The separate React frontend will collect planning inputs and display API responses.
 
 ```text
 bluegrid-2.0/
@@ -43,32 +43,52 @@ bluegrid-2.0/
 │   └── vite.config.ts             # Vite development and build configuration
 ├── backend/
 │   ├── app/
-│   │   ├── engine/                # Reserved for physics and economics modules
-│   │   └── routes/                # Reserved for Flask API routes
-│   ├── data/                      # Reserved for traceable resource datasets
-│   └── tests/                     # Reserved for numerical and API verification
-├── scripts/                       # Future ingestion and preprocessing utilities
+│   │   ├── __init__.py            # Flask application factory
+│   │   ├── config.py              # Explicit modeling and cost assumptions
+│   │   ├── data_loader.py         # Annual datasets and resource conversion
+│   │   ├── validation.py          # Request and unit validation
+│   │   ├── cache.py               # Bounded, expiring analysis runs
+│   │   ├── engine/
+│   │   │   ├── generation.py      # Solar, wind, OTEC, and wave availability
+│   │   │   ├── bess.py            # Hourly dispatch and cyclic SOC
+│   │   │   ├── economics.py       # Nominal DCF, replacements, and LCOE
+│   │   │   ├── carbon.py          # Explicit operational emissions assumptions
+│   │   │   ├── scoring.py         # LCOE/CAPEX ranking
+│   │   │   ├── config_eval.py     # Configuration orchestration and analytics
+│   │   │   └── optimizer.py       # Monthly LP and hourly candidate screening
+│   │   └── routes/                # Evaluation, optimization, comparison, exports
+│   ├── data/                      # Example request and future sourced datasets
+│   ├── tests/                     # Numerical invariants and API integration
+│   ├── requirements.txt
+│   ├── requirements-dev.txt
+│   ├── pytest.ini
+│   └── run.py
+├── scripts/
+│   └── prepare_resources.py        # CSV conversion or synthetic resource export
 ├── docs/
-│   └── BLUEPRINT.md               # Engineering boundaries and planned modules
+│   ├── BLUEPRINT.md               # Engineering boundaries
+│   ├── MODELS.md                  # Equations, units, assumptions, limitations
+│   └── API.md                     # Setup, requests, responses, and exports
+├── .github/workflows/backend.yml  # Automated backend verification
 ├── .gitignore
 ├── README.md
 └── LICENSE
 ```
 
-Empty directories contain `.gitkeep` files so Git retains the structure. These placeholders do not implement backend services or scientific models.
+Reserved frontend directories contain `.gitkeep` files so Git retains the structure. The backend contains implemented Python modules and numerical tests.
 
 | Area | Responsibility |
 | --- | --- |
 | `frontend/` | Inputs, navigation, and visualizations. |
-| `backend/` | Future calculations, validation, and API responses. |
-| `scripts/` | Future data preparation with recorded provenance. |
+| `backend/` | Scientific calculations, validation, and API responses. |
+| `scripts/` | Resource preparation with recorded provenance. |
 | `docs/` | Architecture and modeling assumptions. |
 
 Frontend images belong in `frontend/src/assets/`; assets requiring a stable public URL belong in `frontend/public/`.
 
 ## Engineering Approach
 
-The planned engineering workflow follows the reference architecture and modeling discussion (pp. 3-6 and 8-10):
+The implemented backend workflow follows the reference architecture and modeling discussion (pp. 3-6 and 8-10):
 
 1. Select a supported location and obtain traceable resource and technology inputs.
 2. Define electricity demand in kW, candidate generation capacities in kW, battery energy in kWh, and reliability preferences.
@@ -77,9 +97,9 @@ The planned engineering workflow follows the reference architecture and modeling
 5. Propose capacity mixes through monthly linear programming and screen alternatives using hourly dispatch over a defined year.
 6. Compare costs, energy served, unmet energy, renewable contribution, and carbon estimates with explicit assumptions.
 
-Planned economic outputs include capital expenditure (CAPEX), operating expenditure (OPEX), and levelized cost of energy (LCOE). The reference expresses loss of power supply probability (LPSP) as unmet energy divided by demand energy. These models and their units, defaults, and numerical behavior require verification before operational use in BlueGrid 2.0.
+Economic outputs include capital expenditure (CAPEX), operating expenditure (OPEX), equivalent annual cost, levelized cost of energy (LCOE), and cost of service. LPSP is unmet energy divided by demand energy. Hourly battery dispatch enforces a cyclic boundary, so a charged initial battery cannot supply free annual energy.
 
-Future previews will label synthetic data and distinguish it from optimized configurations or validated assessments. The [engineering blueprint](docs/BLUEPRINT.md) records implementation boundaries.
+The bundled annual resource series are explicitly synthetic and default costs are illustrative. Optimization reports the best feasible candidate found within a bounded search; it does not claim a global hourly optimum. [Model documentation](docs/MODELS.md) records the reference's unit ambiguities, the configurable 1.5% hourly self-discharge assumption, and numerical conventions. Calibrated site data and independent engineering validation remain necessary.
 
 ## Technology Stack
 
@@ -90,11 +110,13 @@ Future previews will label synthetic data and distinguish it from optimized conf
 | 3D geographic interface | React Three Fiber and Three.js | Planned |
 | Charts | Recharts | Planned |
 | Icons | Lucide React | Planned |
-| Scientific API | Python and Flask | Planned |
-| Numerical processing | NumPy and Pandas | Planned |
-| Optimization | SciPy with the HiGHS solver | Planned |
+| Scientific API | Python and [Flask](https://flask.palletsprojects.com/en/stable/patterns/appfactories/) | Implemented |
+| Numerical processing | NumPy and standard-library datetime | Implemented |
+| Optimization | [SciPy HiGHS](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html) | Implemented |
+| Exports | ReportLab, CSV, and JSON | Implemented |
+| Verification | pytest and GitHub Actions | Numerical and API test suite |
 
-The reference used Flask templates and vanilla JavaScript. BlueGrid 2.0 adopts a separate React frontend. Backend dependency versions will be verified during implementation.
+The reference used Flask templates and vanilla JavaScript. BlueGrid 2.0 exposes a separate JSON API for the React frontend. Python dependencies are declared in `backend/requirements.txt` and test dependencies in `backend/requirements-dev.txt`.
 
 ## Installation
 
@@ -106,7 +128,19 @@ cd bluegrid-2.0/frontend
 npm ci
 ```
 
-For an existing checkout, run `npm ci` inside `frontend/`. The lockfile keeps installations reproducible. No backend or API credentials are required for the starter.
+For an existing checkout, run `npm ci` inside `frontend/`. The lockfile keeps installations reproducible.
+
+For the backend, install Python 3.11 or newer. From the repository root on Windows:
+
+```powershell
+cd backend
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m pytest -q
+.\.venv\Scripts\python.exe run.py
+```
+
+On macOS/Linux, use `.venv/bin/python`. The API starts at `http://127.0.0.1:5000`. No API credentials or external data downloads are required for the synthetic demonstration. [API documentation](docs/API.md) includes sample evaluation requests, optimization controls, custom resource ingestion, and WSGI execution.
 
 ## Running the Frontend
 
@@ -130,12 +164,14 @@ Run `npm run build` before `npm run preview`. Stop a running server with `Ctrl+C
 
 | Component | Current state |
 | --- | --- |
-| Repository organization | Frontend structure and existing backend placeholders organized. |
+| Repository organization | Separate frontend, Flask backend, resource script, and documentation. |
 | Documentation | Project purpose, folder responsibilities, and development boundaries documented. |
 | Frontend foundation | Minimal application entry point and development/build configuration. |
 | Visual design | Detailed screen design and implementation are pending. |
 | Earth explorer, planner, analytics, and policy workspace | Planned; not implemented in this foundation step. |
-| Scientific engine and Flask API | Placeholder directories only; no connected optimizer. |
-| Resource datasets and engineering results | No validated site dataset or scientific results delivered in this step. |
+| Scientific engine and Flask API | Generation, cyclic BESS dispatch, economics, carbon, evaluation, comparison, and exports implemented. |
+| Optimization | Monthly HiGHS proposals and bounded hourly-checked candidate search. |
+| Resource datasets | Synthetic annual demonstrations and validated input structure for user-provided annual series; no verified site dataset bundled. |
+| Frontend/API integration | HTTP contracts documented; interactive planning screens are pending. |
 
-The next frontend phase will implement the explorer, planning, analytics, and policy screens within this structure. Backend work will follow with documented assumptions, data provenance, numerical verification, and tested service contracts.
+The next interface phase will connect the explorer, planning, analytics, and policy screens to the API. Further scientific work includes calibrated marine inputs, equipment-specific curves, lifecycle emissions, and independently reviewed site assessments.
