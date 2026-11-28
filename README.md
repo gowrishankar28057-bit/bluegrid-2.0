@@ -2,7 +2,7 @@
 
 A renewable energy planning platform for island and coastal systems, integrating land-based renewables, ocean energy, and battery storage.
 
-**Development stage:** Flask scientific backend and React frontend foundation. The core planning screens are the next interface phase. Licensed under [MIT](LICENSE).
+**Development stage:** interactive 3D Earth explorer, connected planning form, and Flask scientific backend. Full analytics and policy screens are a later interface phase. Licensed under [MIT](LICENSE).
 
 ## Problem Statement
 
@@ -24,15 +24,15 @@ bluegrid-2.0/
 │   │   ├── assets/                # Images, illustrations, and local visual assets
 │   │   ├── components/
 │   │   │   ├── common/            # Shared controls and interface elements
-│   │   │   ├── globe/             # Future Earth explorer components
-│   │   │   ├── planner/           # Future scenario and capacity controls
+│   │   │   ├── globe/             # Three.js Earth, markers, camera, geography
+│   │   │   ├── planner/           # Connected, accessible scenario planning form
 │   │   │   └── charts/            # Future analytical visualizations
 │   │   ├── pages/                 # Screen-level views
 │   │   ├── hooks/                 # Reusable React state and behavior
-│   │   ├── services/              # Future API client and integration boundary
+│   │   ├── services/              # Validated API client and integration tests
 │   │   ├── types/                 # Shared TypeScript domain models
 │   │   ├── data/                  # Explicitly labeled demonstration fixtures
-│   │   ├── App.tsx                # Application root and starter view
+│   │   ├── App.tsx                # Earth explorer and location selection
 │   │   ├── main.tsx               # React entry point
 │   │   └── index.css              # Global styles and Tailwind integration
 │   ├── index.html                 # Browser document entry
@@ -40,7 +40,10 @@ bluegrid-2.0/
 │   ├── package-lock.json          # Reproducible dependency resolution
 │   ├── tsconfig.json              # Application TypeScript configuration
 │   ├── tsconfig.node.json         # Build-tool TypeScript configuration
-│   └── vite.config.ts             # Vite development and build configuration
+│   ├── vite.config.ts             # Development, build, and Flask API proxy
+│   ├── vitest.config.ts           # Component and numerical geometry tests
+│   ├── playwright.config.ts       # Real-browser interaction verification
+│   └── e2e/                      # WebGL, mobile, and live evaluation tests
 ├── backend/
 │   ├── app/
 │   │   ├── __init__.py            # Flask application factory
@@ -68,8 +71,9 @@ bluegrid-2.0/
 ├── docs/
 │   ├── BLUEPRINT.md               # Engineering boundaries
 │   ├── MODELS.md                  # Equations, units, assumptions, limitations
+│   ├── FRONTEND.md                # Globe controls, imagery, and verification
 │   └── API.md                     # Setup, requests, responses, and exports
-├── .github/workflows/backend.yml  # Automated backend verification
+├── .github/workflows/             # Automated backend and frontend verification
 ├── .gitignore
 ├── README.md
 └── LICENSE
@@ -105,16 +109,16 @@ The bundled annual resource series are explicitly synthetic and default costs ar
 
 | Layer | Technology | Status |
 | --- | --- | --- |
-| Frontend | React, TypeScript, [Vite](https://vite.dev/guide/) | Starter foundation |
-| Styling | [Tailwind CSS](https://tailwindcss.com/docs/installation/using-vite) | Foundation configuration |
-| 3D geographic interface | React Three Fiber and Three.js | Planned |
+| Frontend | React, TypeScript, [Vite](https://vite.dev/guide/) | Earth explorer and planning form |
+| Styling | [Tailwind CSS](https://tailwindcss.com/docs/installation/using-vite) | Responsive interface |
+| 3D geographic interface | React Three Fiber and Three.js | Interactive Earth implemented |
 | Charts | Recharts | Planned |
-| Icons | Lucide React | Planned |
+| Icons and typography | Lucide React and locally served Manrope | Implemented |
 | Scientific API | Python and [Flask](https://flask.palletsprojects.com/en/stable/patterns/appfactories/) | Implemented |
 | Numerical processing | NumPy and standard-library datetime | Implemented |
 | Optimization | [SciPy HiGHS](https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.linprog.html) | Implemented |
 | Exports | ReportLab, CSV, and JSON | Implemented |
-| Verification | pytest and GitHub Actions | Numerical and API test suite |
+| Verification | pytest, Vitest, Playwright, and GitHub Actions | Numerical, API, component, and browser tests |
 
 The reference used Flask templates and vanilla JavaScript. BlueGrid 2.0 exposes a separate JSON API for the React frontend. Python dependencies are declared in `backend/requirements.txt` and test dependencies in `backend/requirements-dev.txt`.
 
@@ -150,15 +154,17 @@ From `frontend/`, start the development server:
 npm run dev
 ```
 
-Open the address printed by Vite. The starter displays frontend development status. The core planning screens are scheduled for the next implementation phase.
+Open the address printed by Vite. Drag the globe, scroll to zoom, search for Lakshadweep or Brest, and select a location marker. The view toolbar offers reset, geographic grid, and rotation controls. Start planning opens the live evaluation form; run the Flask backend to evaluate the entered configuration. The bundled NASA imagery is geographic context, not live resource data.
 
 ```bash
 npm run typecheck  # Check TypeScript types
 npm run build      # Create the production bundle in frontend/dist/
 npm run preview    # Serve the built bundle locally
+npm test           # Run frontend unit and component tests
+npm run test:e2e   # Run real-browser tests with the backend installed
 ```
 
-Run `npm run build` before `npm run preview`. Stop a running server with `Ctrl+C`.
+Run `npm run build` before `npm run preview`. Install the test browser once with `npx playwright install chromium`. Stop a running server with `Ctrl+C`. See [frontend documentation](docs/FRONTEND.md) for keyboard controls, API configuration, image credits, and test setup.
 
 ## Current Development Status
 
@@ -166,12 +172,13 @@ Run `npm run build` before `npm run preview`. Stop a running server with `Ctrl+C
 | --- | --- |
 | Repository organization | Separate frontend, Flask backend, resource script, and documentation. |
 | Documentation | Project purpose, folder responsibilities, and development boundaries documented. |
-| Frontend foundation | Minimal application entry point and development/build configuration. |
-| Visual design | Detailed screen design and implementation are pending. |
-| Earth explorer, planner, analytics, and policy workspace | Planned; not implemented in this foundation step. |
+| Earth explorer | Responsive Three.js globe, drag and zoom, two geographical markers, search, grid, and reduced-motion support. |
+| Visual design | Artful navy-and-cyan interface with local typography and attributed NASA Earth imagery. |
+| Planning form | Accessible modal connected to Flask evaluation, with real responses and explicit loading/error states. |
+| Analytics and policy workspace | Full chart and policy screens remain planned. |
 | Scientific engine and Flask API | Generation, cyclic BESS dispatch, economics, carbon, evaluation, comparison, and exports implemented. |
 | Optimization | Monthly HiGHS proposals and bounded hourly-checked candidate search. |
 | Resource datasets | Synthetic annual demonstrations and validated input structure for user-provided annual series; no verified site dataset bundled. |
-| Frontend/API integration | HTTP contracts documented; interactive planning screens are pending. |
+| Frontend/API integration | The explorer's planning form calls `/api/evaluate` through Vite's local proxy. |
 
-The next interface phase will connect the explorer, planning, analytics, and policy screens to the API. Further scientific work includes calibrated marine inputs, equipment-specific curves, lifecycle emissions, and independently reviewed site assessments.
+The next interface phase will expand the planning workspace and add analytics and policy screens. Further scientific work includes calibrated marine inputs, equipment-specific curves, lifecycle emissions, and independently reviewed site assessments. NASA imagery and the Manrope font retain their respective usage terms alongside the MIT-licensed application code.

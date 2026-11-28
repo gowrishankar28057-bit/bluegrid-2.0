@@ -19,7 +19,7 @@ On macOS/Linux, use `.venv/bin/python` in place of `.venv\Scripts\python.exe`. T
 .\.venv\Scripts\waitress-serve.exe --listen=127.0.0.1:5000 --call app:create_app
 ```
 
-Run `npm run dev` separately inside `frontend/`. CORS permits `http://localhost:5173` and `http://127.0.0.1:5173`. Set `BLUEGRID_ALLOWED_ORIGINS` to a comma-separated list for a different local frontend origin. The current frontend starter has no planning forms connected yet.
+Run `npm run dev` separately inside `frontend/`. CORS permits `http://localhost:5173` and `http://127.0.0.1:5173`. Set `BLUEGRID_ALLOWED_ORIGINS` to a comma-separated list for a different local frontend origin. The Earth explorer includes a planning form connected to `/api/evaluate` through Vite's local proxy; the full analytics and policy screens remain pending.
 
 ## Endpoints
 

@@ -37,7 +37,8 @@ The scientific engine modules, application factory, configuration, data loader, 
 - Geographic site explorer: initial locations Lakshadweep, India and Brest, France.
 - Planning inputs: electricity demand, renewables, battery.
 - 3D Earth visualization and two pinned locations.
-- Preview of a synthetic 24-hour energy balance, **not** backend optimization.
+- Interactive Earth with attributed NASA imagery and two selectable demonstration locations.
+- A connected planning form evaluates synthetic annual configurations through the Flask engine; full chart and policy screens remain pending.
 - Implemented service endpoints `/api/evaluate`, `/api/optimize`, `/api/compare`, and cached JSON/CSV/PDF exports; frontend forms remain pending.
 
 ## Engineering guardrails

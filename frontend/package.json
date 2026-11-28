@@ -2,7 +2,7 @@
   "name": "bluegrid-frontend",
   "private": true,
   "version": "0.1.0",
-  "description": "Frontend foundation for BlueGrid 2.0 renewable energy planning.",
+  "description": "Interactive 3D Earth explorer and renewable energy planning for BlueGrid 2.0.",
   "license": "MIT",
   "type": "module",
   "engines": {
@@ -12,20 +12,34 @@
     "dev": "vite",
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p tsconfig.node.json",
     "build": "npm run typecheck && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
+    "@fontsource-variable/manrope": "5.3.0",
+    "@react-three/fiber": "9.8.2",
+    "lucide-react": "1.83.0",
     "react": "19.3.1",
-    "react-dom": "19.3.1"
+    "react-dom": "19.3.1",
+    "three": "0.187.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.65.1",
     "@tailwindcss/vite": "4.3.5",
+    "@testing-library/jest-dom": "8.0.0",
+    "@testing-library/react": "16.3.3",
+    "@testing-library/user-event": "14.6.13",
     "@types/node": "26.6.11",
     "@types/react": "19.3.3",
     "@types/react-dom": "19.3.0",
+    "@types/three": "0.187.0",
     "@vitejs/plugin-react": "6.3.0",
+    "jsdom": "31.0.1",
     "tailwindcss": "4.3.5",
     "typescript": "7.0.2",
-    "vite": "8.4.0"
+    "vite": "8.4.0",
+    "vitest": "5.1.2"
   }
 }
